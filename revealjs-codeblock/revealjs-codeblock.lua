@@ -30,6 +30,18 @@ local function is_data_line_number_in_attributes(attributes)
   return false
 end
 
+local function make_attribute_string(key, val)
+  local k = key
+  local v = val
+
+  -- Other attribute transformations can be added in this function as well
+  if key == 'startFrom' then
+    k = "data-ln-start-from"
+  end
+
+  return string.format('%s="%s"', k, v)
+end
+
 function CodeBlock(block)
   if FORMAT == 'revealjs' then
     local css_classes = {}
@@ -50,12 +62,12 @@ function CodeBlock(block)
                     string.format('id="%s"', block.identifier))
     end
     if next(css_classes) then
-      class_attribute = string.format('class="%s"',
+      local class_attribute = string.format('class="%s"',
                                       table.concat(css_classes, ' '))
       table.insert(code_tag_attributes, class_attribute)
     end
     for k, v in pairs(block.attributes) do
-      attribute_string = string.format('%s="%s"', k, v)
+      local attribute_string = make_attribute_string(k, v)
       if is_pre_tag_attribute(k) then
         table.insert(pre_tag_attributes, attribute_string)
       else
